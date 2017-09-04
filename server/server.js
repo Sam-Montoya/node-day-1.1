@@ -29,26 +29,33 @@ app.post('/api/books', (req, res)=>{
 
 app.put('/api/books/:id', (req, res)=>{
 
-  let bookToUpdate = books.find((book)=>book.id === req.params.id * 1);
-  if (!bookToUpdate){
-    return res.status(404).send("No book found with that ID");
-  }
+  // let bookToUpdate = books.find((book)=>book.id === req.params.id * 1);
+  // if (!bookToUpdate){
+  //   return res.status(404).send("No book found with that ID");
+  // }
 
-  delete req.body.votes;
-  delete req.body.id;
-  Object.assign(bookToUpdate, req.body);
+  // delete req.body.votes;
+  // delete req.body.id;
+  // Object.assign(bookToUpdate, req.body);
+
+  console.log(req.params.id);
+  for(let i = 0; i < books.length; i++){
+    if(books[i].id === Number(req.params.id)){
+      //Edit the book
+      Object.assign( books[i], req.body);
+      //Send book back to the front end
+      return res.send(books[i]);
+    }
+  }
+  let bookToEdit = books.find((book)=>book.id === req.params.id * 1);
+  Object.assign(bookToEdit, req.body);
+  res.send(bookToEdit);
 });
 
 app.delete('/api/books/:id', (req, res)=>{
-  let bookToDelete = books.find((book)=>book.id === req.params.id * 1);
-  if (!bookToDelete){
-    return res.status(404).send(`No book with id ${req.params.id} to delete`);
-  }
-  res.send({
-    message:`Deleteing book id ${req.params.id} (${bookToDelete.title})`,
-    book:bookToDelete
-  })
-})
+  books = books.filter(book=>book.id!==Number(req.params.id))
+  res.send(books);
+});
 
 app.patch('/api/books/:id/upvote', (req, res)=>{
   let bookToUpvote = books.find((book)=>book.id === req.params.id * 1);
@@ -65,4 +72,5 @@ app.get('/*', (req, res)=>{
 
 app.listen(port, ()=>{
   console.log(`Listening on port: ${port}` );
+  console.log('Im being hit!');
 })
